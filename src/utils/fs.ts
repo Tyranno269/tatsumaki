@@ -18,3 +18,7 @@ export async function writeFileSafe(filePath: string, content: string): Promise<
   await ensureDir(path.dirname(filePath));
   await fs.writeFile(filePath, content, { encoding: "utf-8", flag: "wx" });
 }
+
+export async function readFile(filePath: string): Promise<string> {
+  return fs.readFile(filePath, "utf-8");
+}

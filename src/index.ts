@@ -1,10 +1,21 @@
 #!/usr/bin/env node
+import minimist from "minimist";
+
 import { generateRailsTsp } from "./commands/generate.js";
 
 async function main(): Promise<void> {
+  const args = minimist(process.argv.slice(2));
   const cwd = process.cwd();
+
+  const options = {
+    cwd,
+    force: args.force || false,
+    append: args.append || false,
+    out: args.out || "rails.tsp",
+  };
+
   try {
-    await generateRailsTsp({ cwd });
+    await generateRailsTsp(options);
   } catch (e: unknown) {
     const msg =
       e instanceof Error

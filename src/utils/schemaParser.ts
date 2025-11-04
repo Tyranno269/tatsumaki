@@ -1,6 +1,7 @@
 export interface TableModel {
   name: string;
   comment?: string;
+  primaryKey?: string;
   fields: Field[];
 }
 
@@ -9,6 +10,7 @@ export interface Field {
   type: string;
   nullable: boolean;
   comment?: string;
+  default?: string | number | boolean;
 }
 
 export function parseSchema(content: string): TableModel[] {
@@ -23,22 +25,40 @@ export function parseSchema(content: string): TableModel[] {
 
     const fields = parseFields(tableBody);
 
-    // Add implicit primary key if not disabled
+    // Handle primary key
     const idDisabled = /\bid:\s*false\b/.test(attrs);
+    const customPrimaryKey = /primary_key:\s*"([^"]+)"/.exec(attrs)?.[1];
     const pkTypeInAttrs = /id:\s*:(\w+)/.exec(attrs)?.[1];
     const pkType = pkTypeInAttrs ?? "bigint";
 
-    if (!idDisabled && !fields.some((f) => f.name === "id")) {
-      fields.unshift({
-        name: "id",
-        type: mapRailsType(pkType),
-        nullable: false,
-      });
+    let primaryKey: string | undefined;
+
+    if (!idDisabled) {
+      if (customPrimaryKey) {
+        // Custom single primary key
+        primaryKey = customPrimaryKey;
+        if (!fields.some((f) => f.name === customPrimaryKey)) {
+          fields.unshift({
+            name: customPrimaryKey,
+            type: mapRailsType(pkType),
+            nullable: false,
+          });
+        }
+      } else if (!fields.some((f) => f.name === "id")) {
+        // Default id primary key
+        primaryKey = "id";
+        fields.unshift({
+          name: "id",
+          type: mapRailsType(pkType),
+          nullable: false,
+        });
+      }
     }
 
     models.push({
       name: modelName,
       comment: comment || undefined,
+      primaryKey,
       fields,
     });
   }
@@ -90,7 +110,12 @@ function parseReference(name: string, rest: string): Field {
 
   const commentMatch = /comment:\s*"([^"]*)"/.exec(rest);
   const baseComment = commentMatch?.[1];
-  const comment = baseComment ? `${baseComment}; ref: ${name}` : `ref: ${name}`;
+
+  // Check for to_table in foreign_key option
+  const toTableMatch = /foreign_key:\s*{[^}]*to_table:\s*:(\w+)/.exec(rest);
+  const refTable = toTableMatch?.[1] || name;
+
+  const comment = baseComment ? `${baseComment}; ref: ${refTable}` : `ref: ${refTable}`;
 
   return {
     name: `${name}_id`,
@@ -106,6 +131,24 @@ function parseColumn(type: string, name: string, rest: string): Field {
 
   const commentMatch = /comment:\s*"([^"]*)"/.exec(rest);
   let comment = commentMatch?.[1];
+
+  // Parse default values (primitive types only)
+  let defaultValue: string | number | boolean | undefined;
+  const defaultMatch = /default:\s*([^,\s]+)/.exec(rest);
+  if (defaultMatch) {
+    const defaultStr = defaultMatch[1].trim();
+    if (defaultStr.startsWith('"') && defaultStr.endsWith('"')) {
+      // String default
+      defaultValue = defaultStr.slice(1, -1);
+    } else if (defaultStr === "true" || defaultStr === "false") {
+      // Boolean default
+      defaultValue = defaultStr === "true";
+    } else if (/^\d+(\.\d+)?$/.test(defaultStr)) {
+      // Number default
+      defaultValue = parseFloat(defaultStr);
+    }
+    // Ignore complex defaults (functions, expressions)
+  }
 
   // Add precision/scale for decimal
   if (type === "decimal") {
@@ -126,11 +169,18 @@ function parseColumn(type: string, name: string, rest: string): Field {
     comment = comment ? `${comment} (${limitInfo})` : limitInfo;
   }
 
+  // Add default info to comment if present
+  if (defaultValue !== undefined) {
+    const defaultInfo = `default: ${JSON.stringify(defaultValue)}`;
+    comment = comment ? `${comment} (${defaultInfo})` : defaultInfo;
+  }
+
   return {
     name,
     type: mapRailsType(type),
     nullable,
     comment,
+    default: defaultValue,
   };
 }
 

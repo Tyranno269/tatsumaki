@@ -1,4 +1,4 @@
-import { parseSchema } from "./dist/utils/schema-parser.js";
+import { parseSchema } from "./dist/utils/schemaParser.js";
 
 function test(name, fn) {
   try {
@@ -60,7 +60,84 @@ test("handles table without comment and auto-adds id", () => {
   const models = parseSchema(schema);
   expect(models).toHaveLength(1);
   expect(models[0].name).toBe("User");
+  expect(models[0].primaryKey).toBe("id");
   expect(models[0].fields).toHaveLength(4); // id, name, created_at, updated_at
+});
+
+// Custom primary key tests
+test("handles custom primary key name", () => {
+  const schema = `
+    create_table "accounts", primary_key: "account_id" do |t|
+      t.string "name", null: false
+    end
+  `;
+  
+  const models = parseSchema(schema);
+  expect(models[0].name).toBe("Account");
+  expect(models[0].primaryKey).toBe("account_id");
+  
+  const accountIdField = models[0].fields.find(f => f.name === "account_id");
+  expect(accountIdField.type).toBe("int64");
+  expect(accountIdField.nullable).toBe(false);
+});
+
+test("handles id: false (no primary key)", () => {
+  const schema = `
+    create_table "logs", id: false do |t|
+      t.string "message"
+    end
+  `;
+  
+  const models = parseSchema(schema);
+  expect(models[0].primaryKey).toBe(undefined);
+  expect(models[0].fields.some(f => f.name === "id")).toBe(false);
+});
+
+// Default value tests
+test("handles primitive default values", () => {
+  const schema = `
+    create_table "settings" do |t|
+      t.string "status", default: "active", null: false
+      t.boolean "enabled", default: true
+      t.integer "max_count", default: 100
+      t.string "complex_default", default: -> { "NOW()" }
+    end
+  `;
+  
+  const models = parseSchema(schema);
+  const fields = models[0].fields;
+  
+  const statusField = fields.find(f => f.name === "status");
+  const enabledField = fields.find(f => f.name === "enabled");
+  const maxCountField = fields.find(f => f.name === "max_count");
+  const complexField = fields.find(f => f.name === "complex_default");
+  
+  expect(statusField.default).toBe("active");
+  expect(enabledField.default).toBe(true);
+  expect(maxCountField.default).toBe(100);
+  expect(complexField.default).toBe(undefined); // Complex defaults ignored
+});
+
+// Foreign key to_table tests
+test("handles foreign key to_table references", () => {
+  const schema = `
+    create_table "posts" do |t|
+      t.references "user", null: false
+      t.references "author", foreign_key: { to_table: :people }, null: false
+      t.references "category", foreign_key: { to_table: :post_categories, on_delete: :cascade }
+    end
+  `;
+  
+  const models = parseSchema(schema);
+  const fields = models[0].fields;
+  
+  const userField = fields.find(f => f.name === "user_id");
+  const authorField = fields.find(f => f.name === "author_id");
+  const categoryField = fields.find(f => f.name === "category_id");
+  
+  expect(userField.comment).toBe("ref: user");
+  expect(authorField.comment).toBe("ref: people");
+  expect(categoryField.comment).toBe("ref: post_categories");
 });
 
 // Comprehensive Rails data types

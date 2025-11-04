@@ -1,4 +1,4 @@
-import { parseSchema } from "./schema-parser.js";
+import { parseSchema } from "./schemaParser.js";
 
 describe("parseSchema", () => {
   test("handles table without comment and auto-adds id", () => {

@@ -2,9 +2,10 @@ import fg from "fast-glob";
 import { promises as fs } from "fs";
 
 import { ensureDir, fileExists, writeFileSafe, readFile } from "../utils/fs.js";
+import { formatModelDefinitions } from "../utils/modelFormatter.js";
 import { resolvePath } from "../utils/path.js";
-import { parseSchema, type TableModel } from "../utils/schema-parser.js";
-import { defaultRailsTspTemplate } from "../utils/tsp-templates.js";
+import { parseSchema, type TableModel } from "../utils/schemaParser.js";
+import { defaultRailsTspTemplate } from "../utils/tspTemplates.js";
 
 type GenerateOptions = {
   cwd: string;
@@ -59,15 +60,7 @@ export async function generateRailsTsp({
 async function appendToFile(targetPath: string, models: TableModel[]) {
   const existing = await fs.readFile(targetPath, "utf-8");
 
-  // Extract existing model names to avoid duplicates
-  const existingModels = new Set<string>();
-  const modelRegex = /model\s+(\w+)\s*{/g;
-  let match;
-  while ((match = modelRegex.exec(existing)) !== null) {
-    existingModels.add(match[1]);
-  }
-
-  // Filter out duplicate models
+  const existingModels = extractExistingModels(existing);
   const newModels = models.filter((model) => !existingModels.has(model.name));
 
   if (newModels.length === 0) {
@@ -75,31 +68,29 @@ async function appendToFile(targetPath: string, models: TableModel[]) {
     return;
   }
 
-  // Generate append content
-  const timestamp = new Date().toISOString().split("T")[0];
-  const separator = `\n  // ---- appended at ${timestamp} ----`;
-
-  const modelDefinitions = newModels
-    .map((model) => {
-      const comment = model.comment ? `  // ${model.comment}\n` : "";
-      const fields = model.fields
-        .map((field) => {
-          const fieldComment = field.comment ? ` // ${field.comment}` : "";
-          const optional = field.nullable ? "?" : "";
-          return `    ${field.name}${optional}: ${field.type};${fieldComment}`;
-        })
-        .join("\n");
-
-      return `${comment}  model ${model.name} {\n${fields}\n  }`;
-    })
-    .join("\n\n");
-
-  // Insert before closing brace of namespace
-  const appendContent = separator + "\n\n" + modelDefinitions;
+  const appendContent = generateAppendContent(newModels);
   const updatedContent = existing.replace(/(}\s*)$/, appendContent + "\n$1");
 
   await fs.writeFile(targetPath, updatedContent, "utf-8");
   console.log?.(`Appended ${newModels.length} models to: ${targetPath}`);
+}
+
+function extractExistingModels(content: string): Set<string> {
+  const existingModels = new Set<string>();
+  const modelRegex = /model\s+(\w+)\s*{/g;
+  let match;
+  while ((match = modelRegex.exec(content)) !== null) {
+    existingModels.add(match[1]);
+  }
+  return existingModels;
+}
+
+function generateAppendContent(models: TableModel[]): string {
+  const timestamp = new Date().toISOString().split("T")[0];
+  const separator = `\n  // ---- appended at ${timestamp} ----`;
+  const modelDefinitions = formatModelDefinitions(models);
+
+  return separator + "\n\n" + modelDefinitions;
 }
 
 async function findSchemaRb(cwd: string): Promise<string | null> {

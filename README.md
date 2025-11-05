@@ -19,6 +19,7 @@ npx tatsumaki
 ```
 
 This will:
+
 1. Search for `db/schema.rb` in your project (supports monorepos)
 2. Parse Rails table definitions
 3. Generate `rails.tsp` with TypeSpec models
@@ -55,6 +56,7 @@ project/
 ## Generated Output
 
 ### Input (Rails schema.rb)
+
 ```ruby
 create_table "accounts", primary_key: "account_id", comment: "User accounts" do |t|
   t.string "name", limit: 100, null: false, comment: "Account name"
@@ -80,6 +82,7 @@ end
 ```
 
 ### Output (rails.tsp)
+
 ```typescript
 import "@typespec/http";
 import "@typespec/openapi3";
@@ -144,6 +147,7 @@ namespace Api {
 ## Advanced Examples
 
 ### Custom Primary Keys
+
 ```ruby
 # Single custom primary key
 create_table "accounts", primary_key: "account_id" do |t|
@@ -159,6 +163,7 @@ create_table "join_table", id: false do |t|
 ```
 
 ### Default Values
+
 ```ruby
 t.string "status", default: "active"     # → default: "active"
 t.boolean "enabled", default: true       # → default: true
@@ -167,6 +172,7 @@ t.datetime "expires", default: -> { ... } # → ignored (complex default)
 ```
 
 ### Foreign Key References
+
 ```ruby
 t.references "user"                                    # → // ref: user
 t.references "author", foreign_key: { to_table: :people } # → // ref: people

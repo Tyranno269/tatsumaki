@@ -1,13 +1,37 @@
 {
   "name": "@tyranno269/tatsumaki",
   "version": "1.0.0",
-  "description": "Automatically generate TypeSpec models from Rails",
+  "description": "Automatically generate TypeSpec models from Rails database schema",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "tatsumaki": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "rails",
+    "typespec",
+    "openapi",
+    "schema",
+    "generator",
+    "typescript",
+    "api",
+    "codegen"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run lint && npm run build",
+    "postbuild": "chmod +x dist/index.js || true",
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
@@ -17,6 +41,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Tyranno269/tatsumaki.git"
+  },
+  "homepage": "https://github.com/Tyranno269/tatsumaki#readme",
+  "bugs": {
+    "url": "https://github.com/Tyranno269/tatsumaki/issues"
   },
   "author": "tyranno269",
   "license": "MIT",

@@ -8,7 +8,7 @@ export function defaultRailsTspTemplate(models: TableModel[] = []): string {
 import "@typespec/openapi3";
 using TypeSpec.Http;
 
-@service({ title: "Rails API" })
+@service(#{ title: "Rails API" })
 @server("http://localhost:3000", "api")
 @route("/api/v1")
 namespace Api {

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1] - 2025-11-06
+
+### Fixed
+
+- **TypeSpec compilation compatibility**: Fixed `@service` decorator syntax
+  - Changed `@service({ title: "Rails API" })` to `@service(#{ title: "Rails API" })`
+  - Generated TypeSpec files now compile correctly with `pnpm tsp compile .`
+  - Resolved TypeSpec parser error due to incorrect object syntax
+
 ## [1.1.0] - 2025-11-06
 
 ### Fixed

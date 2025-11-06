@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.0] - 2025-11-06
+
+### Fixed
+
+- **Singularization bug**: Fixed incorrect singularization for words ending in "es"
+  - `company_branches` now correctly becomes `CompanyBranch` (was `CompanyBranche`)
+  - Added proper Rails ActiveSupport::Inflector compatibility
+  - Supports all words ending in "ches", "shes", "xes", "ses" patterns
+
+### Changed
+
+- **Modular architecture**: Refactored monolithic parser into specialized modules
+  - `columnParser.ts`: Individual column parsing logic
+  - `railsTypeMapper.ts`: Rails → TypeSpec type conversion
+  - `columnOptionProcessor.ts`: Column options and comment generation
+  - `stringUtils.ts`: String transformation utilities
+  - `railsInflector.ts`: Rails-compatible singularization (existing)
+- **Improved maintainability**: Clear separation of concerns for future extensibility
+- **TypeScript compliance**: Fixed `verbatimModuleSyntax` type import/export issues
+
+### Technical
+
+- Split 150+ line `schemaParser.ts` into 5 focused modules (6-48 lines each)
+- Enhanced code organization for upcoming enum support
+- Maintained 100% backward compatibility and test coverage
+
 ## [1.0.0] - 2025-11-06
 
 ### Added

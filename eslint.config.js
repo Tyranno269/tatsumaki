@@ -7,7 +7,7 @@ import ts from "typescript-eslint";
 
 export default [
   // 無視パターン
-  { ignores: ["dist/**", "node_modules/**"] },
+  { ignores: ["dist/**", "node_modules/**", "**/*.test.ts", "vitest.config.ts"] },
 
   // JS推奨
   js.configs.recommended,

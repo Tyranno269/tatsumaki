@@ -276,4 +276,49 @@ describe("parseSchema", () => {
     // Test singularization and PascalCase conversion
     expect(models.map((m) => m.name).sort()).toEqual(["ApiKey", "Category", "UserProfile"]);
   });
+
+  test("handles singularization of words ending in 'es'", () => {
+    const schema = `
+      create_table "company_branches" do |t|
+        t.string "name"
+      end
+      
+      create_table "addresses" do |t|
+        t.string "street"
+      end
+      
+      create_table "boxes" do |t|
+        t.string "content"
+      end
+      
+      create_table "dishes" do |t|
+        t.string "name"
+      end
+      
+      create_table "buses" do |t|
+        t.string "route"
+      end
+      
+      create_table "analyses" do |t|
+        t.string "result"
+      end
+      
+      create_table "indices" do |t|
+        t.string "name"
+      end
+    `;
+
+    const models = parseSchema(schema);
+
+    // Test correct singularization including complex cases
+    expect(models.map((m) => m.name).sort()).toEqual([
+      "Address",
+      "Analysis",
+      "Box",
+      "Bus",
+      "CompanyBranch",
+      "Dish",
+      "Index",
+    ]);
+  });
 });

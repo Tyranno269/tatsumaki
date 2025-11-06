@@ -7,7 +7,7 @@ import ts from "typescript-eslint";
 
 export default [
   // 無視パターン
-  { ignores: ["dist/**", "node_modules/**", "**/*.test.ts", "vitest.config.ts"] },
+  { ignores: ["dist/**", "node_modules/**", "vitest.config.ts"] },
 
   // JS推奨
   js.configs.recommended,
@@ -15,9 +15,10 @@ export default [
   // TypeScript 推奨（型なし）をまず全体に
   ...ts.configs.recommended,
 
-  // TypeScript 型付きLintはTSファイルだけに限定
+  // TypeScript 型付きLintはTSファイルだけに限定（テストファイル除外）
   {
     files: ["**/*.ts", "**/*.tsx"],
+    ignores: ["**/*.test.ts"],
     ...ts.configs.recommendedTypeChecked[ts.configs.recommendedTypeChecked.length - 1], // 後段設定のマージ回避策
     languageOptions: {
       parserOptions: {

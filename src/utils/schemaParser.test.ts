@@ -312,13 +312,13 @@ describe("parseSchema", () => {
 
     // Test correct singularization including complex cases
     expect(models.map((m) => m.name).sort()).toEqual([
-      "Address", 
+      "Address",
       "Analysis",
-      "Box", 
-      "Bus", 
-      "CompanyBranch", 
+      "Box",
+      "Bus",
+      "CompanyBranch",
       "Dish",
-      "Index"
+      "Index",
     ]);
   });
 });

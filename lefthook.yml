@@ -1,0 +1,33 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+#
+# pre-push:
+#   jobs:
+#     - name: packages audit
+#       tags:
+#         - frontend
+#         - security
+#       run: yarn audit
+#
+#     - name: gems audit
+#       tags:
+#         - backend
+#         - security
+#       run: bundle audit
+#
+pre-commit:
+  parallel: true
+  jobs:
+    - name: prettier
+      run: pnpm prettier --write {staged_files}
+      glob:
+        - "*.{js,jsx,ts,tsx,json,md,yml,yaml,css,scss,html}"
+      exclude:
+        - "pnpm-lock.yaml"
+
+    - name: eslint
+      run: pnpm eslint --fix {staged_files}
+      glob:
+        - "*.{js,jsx,ts,tsx}"

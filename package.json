@@ -1,12 +1,12 @@
 {
   "name": "@tyranno269/tatsumaki",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Automatically generate TypeSpec models from Rails database schema",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "bin": {
-    "tatsumaki": "dist/index.js"
+    "tatsumaki": "dist/index.mjs"
   },
   "files": [
     "dist/**/*",
@@ -29,10 +29,11 @@
     "codegen"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run test && npm run lint && npm run build",
-    "postbuild": "chmod +x dist/index.js || true",
+    "prepublishOnly": "npm run test && npm run lint && npm run typecheck && npm run build",
+    "postbuild": "chmod +x dist/index.mjs || true",
     "test": "vitest run",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
@@ -65,6 +66,7 @@
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
+    "tsdown": "^0.16.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",
     "typescript-transform-paths": "^3.5.5",

@@ -191,6 +191,6 @@ Error: Output file already exists. Use --force to overwrite or --append to appen
 
 ## Supported Versions
 
-- Node.js 16+
+- Node.js 18+
 - Rails 5.1+ (bigint primary keys)
 - TypeSpec 0.50+

@@ -5,8 +5,8 @@ export function formatModelDefinition(model: TableModel): string {
   const fields = model.fields
     .map((field) => {
       const fieldComment = field.comment ? ` // ${field.comment}` : "";
-      const optional = field.nullable ? "?" : "";
-      return `    ${field.name}${optional}: ${field.type};${fieldComment}`;
+      const fieldType = field.nullable ? `${field.type} | null` : field.type;
+      return `    ${field.name}: ${fieldType};${fieldComment}`;
     })
     .join("\n");
 

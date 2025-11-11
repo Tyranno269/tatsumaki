@@ -88,7 +88,7 @@ import "@typespec/http";
 import "@typespec/openapi3";
 using TypeSpec.Http;
 
-@service({ title: "Rails API" })
+@service(#{ title: "Rails API" })
 @server("http://localhost:3000", "api")
 @route("/api/v1")
 namespace Api {
@@ -97,11 +97,11 @@ namespace Api {
     account_id: int64;
     name: string; // Account name (limit: 100)
     status: string; // default: "active"
-    enabled?: boolean; // default: true
-    max_users?: int32; // default: 10
+    enabled: boolean | null; // default: true
+    max_users: int32 | null; // default: 10
     company_id: string; // ref: company
     organization_id: int64; // ref: companies
-    balance?: string; // precision: 10, scale: 2
+    balance: string | null; // precision: 10, scale: 2
     created_at: utcDateTime;
     updated_at: utcDateTime;
   }
@@ -110,13 +110,13 @@ namespace Api {
     id: string;
     title: string;
     account_id: int64; // ref: account
-    created_at?: utcDateTime;
-    updated_at?: utcDateTime;
+    created_at: utcDateTime | null;
+    updated_at: utcDateTime | null;
   }
 
   model Log {
-    message?: string;
-    metadata?: unknown;
+    message: string | null;
+    metadata: unknown | null;
   }
 }
 ```

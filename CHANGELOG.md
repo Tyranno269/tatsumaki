@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.3] - 2025-11-11
+
+### Changed
+
+- **Nullable field representation**: Changed nullable columns from optional fields to union types with null
+  - `field?: type` → `field: type | null` for columns without `null: false`
+  - Better matches Rails API behavior where nullable fields return `null` values instead of being omitted
+  - More accurate TypeScript types for API responses
+
 ## [1.1.2] - 2025-11-07
 
 ### Changed

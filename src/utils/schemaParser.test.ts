@@ -14,10 +14,28 @@ describe("parseSchema", () => {
     expect(models[0].name).toBe("User");
     expect(models[0].comment).toBeUndefined();
     expect(models[0].fields).toEqual([
-      { name: "id", type: "int64", nullable: false, comment: undefined },
-      { name: "name", type: "string", nullable: false, comment: undefined },
-      { name: "created_at", type: "utcDateTime", nullable: false, comment: undefined },
-      { name: "updated_at", type: "utcDateTime", nullable: false, comment: undefined },
+      { name: "id", type: "int64", nullable: false, description: undefined, metadata: undefined },
+      {
+        name: "name",
+        type: "string",
+        nullable: false,
+        description: undefined,
+        metadata: undefined,
+      },
+      {
+        name: "created_at",
+        type: "utcDateTime",
+        nullable: false,
+        description: undefined,
+        metadata: undefined,
+      },
+      {
+        name: "updated_at",
+        type: "utcDateTime",
+        nullable: false,
+        description: undefined,
+        metadata: undefined,
+      },
     ]);
   });
 
@@ -34,10 +52,28 @@ describe("parseSchema", () => {
     expect(models[0].name).toBe("Post");
     expect(models[0].comment).toBe("Blog posts");
     expect(models[0].fields).toEqual([
-      { name: "id", type: "string", nullable: false, comment: undefined },
-      { name: "title", type: "string", nullable: false, comment: "Post title (limit: 255)" },
-      { name: "user_id", type: "string", nullable: false, comment: "ref: user" },
-      { name: "price", type: "string", nullable: true, comment: "precision: 10, scale: 2" },
+      { name: "id", type: "string", nullable: false, description: undefined, metadata: undefined },
+      {
+        name: "title",
+        type: "string",
+        nullable: false,
+        description: "Post title",
+        metadata: "limit: 255",
+      },
+      {
+        name: "user_id",
+        type: "string",
+        nullable: false,
+        description: undefined,
+        metadata: "ref: user",
+      },
+      {
+        name: "price",
+        type: "string",
+        nullable: true,
+        description: undefined,
+        metadata: "precision: 10, scale: 2",
+      },
     ]);
   });
 
@@ -51,8 +87,20 @@ describe("parseSchema", () => {
 
     const models = parseSchema(schema);
     expect(models[0].fields).toEqual([
-      { name: "message", type: "string", nullable: true, comment: undefined },
-      { name: "data", type: "unknown", nullable: true, comment: undefined },
+      {
+        name: "message",
+        type: "string",
+        nullable: true,
+        description: undefined,
+        metadata: undefined,
+      },
+      {
+        name: "data",
+        type: "unknown",
+        nullable: true,
+        description: undefined,
+        metadata: undefined,
+      },
     ]);
   });
 
@@ -132,10 +180,34 @@ describe("parseSchema", () => {
 
     expect(fields).toEqual(
       expect.arrayContaining([
-        { name: "user_id", type: "int64", nullable: false, comment: "ref: user" },
-        { name: "category_id", type: "string", nullable: false, comment: "ref: category" },
-        { name: "author_id", type: "int64", nullable: false, comment: "ref: author" },
-        { name: "organization_id", type: "string", nullable: false, comment: "ref: organization" },
+        {
+          name: "user_id",
+          type: "int64",
+          nullable: false,
+          description: undefined,
+          metadata: "ref: user",
+        },
+        {
+          name: "category_id",
+          type: "string",
+          nullable: false,
+          description: undefined,
+          metadata: "ref: category",
+        },
+        {
+          name: "author_id",
+          type: "int64",
+          nullable: false,
+          description: undefined,
+          metadata: "ref: author",
+        },
+        {
+          name: "organization_id",
+          type: "string",
+          nullable: false,
+          description: undefined,
+          metadata: "ref: organization",
+        },
       ]),
     );
   });
@@ -155,10 +227,34 @@ describe("parseSchema", () => {
 
     expect(fields).toEqual(
       expect.arrayContaining([
-        { name: "required_field", type: "string", nullable: false, comment: undefined },
-        { name: "optional_field", type: "string", nullable: true, comment: undefined },
-        { name: "default_nullable", type: "string", nullable: true, comment: undefined },
-        { name: "explicit_not_null", type: "int32", nullable: false, comment: undefined },
+        {
+          name: "required_field",
+          type: "string",
+          nullable: false,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "optional_field",
+          type: "string",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "default_nullable",
+          type: "string",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "explicit_not_null",
+          type: "int32",
+          nullable: false,
+          description: undefined,
+          metadata: undefined,
+        },
       ]),
     );
   });
@@ -178,15 +274,34 @@ describe("parseSchema", () => {
 
     expect(fields).toEqual(
       expect.arrayContaining([
-        { name: "name", type: "string", nullable: false, comment: "User name (limit: 100)" },
+        {
+          name: "name",
+          type: "string",
+          nullable: false,
+          description: "User name",
+          metadata: "limit: 100",
+        },
         {
           name: "price",
           type: "string",
           nullable: true,
-          comment: "Product price (precision: 10, scale: 2)",
+          description: "Product price",
+          metadata: "precision: 10, scale: 2",
         },
-        { name: "code", type: "string", nullable: true, comment: "Product code (limit: 50)" },
-        { name: "weight", type: "string", nullable: true, comment: "precision: 8, scale: 3" },
+        {
+          name: "code",
+          type: "string",
+          nullable: true,
+          description: "Product code",
+          metadata: "limit: 50",
+        },
+        {
+          name: "weight",
+          type: "string",
+          nullable: true,
+          description: undefined,
+          metadata: "precision: 8, scale: 3",
+        },
       ]),
     );
   });
@@ -211,24 +326,60 @@ describe("parseSchema", () => {
     // First table - timestamps not null
     expect(models[0].fields).toEqual(
       expect.arrayContaining([
-        { name: "created_at", type: "utcDateTime", nullable: false, comment: undefined },
-        { name: "updated_at", type: "utcDateTime", nullable: false, comment: undefined },
+        {
+          name: "created_at",
+          type: "utcDateTime",
+          nullable: false,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "updated_at",
+          type: "utcDateTime",
+          nullable: false,
+          description: undefined,
+          metadata: undefined,
+        },
       ]),
     );
 
     // Second table - timestamps nullable
     expect(models[1].fields).toEqual(
       expect.arrayContaining([
-        { name: "created_at", type: "utcDateTime", nullable: true, comment: undefined },
-        { name: "updated_at", type: "utcDateTime", nullable: true, comment: undefined },
+        {
+          name: "created_at",
+          type: "utcDateTime",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "updated_at",
+          type: "utcDateTime",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
       ]),
     );
 
     // Third table - default nullable
     expect(models[2].fields).toEqual(
       expect.arrayContaining([
-        { name: "created_at", type: "utcDateTime", nullable: true, comment: undefined },
-        { name: "updated_at", type: "utcDateTime", nullable: true, comment: undefined },
+        {
+          name: "created_at",
+          type: "utcDateTime",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
+        {
+          name: "updated_at",
+          type: "utcDateTime",
+          nullable: true,
+          description: undefined,
+          metadata: undefined,
+        },
       ]),
     );
   });

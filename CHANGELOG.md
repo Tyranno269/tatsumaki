@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.1.4] - 2025-11-12
+
+### Added
+
+- **JSDoc comments for OpenAPI generation**: Table and column comments now use JSDoc syntax for proper OpenAPI documentation
+  - Table comments: `// comment` → `/** comment */` above model
+  - Column comments: `field: type; // comment` → `/** comment */\nfield: type;`
+  - Technical metadata (limit, precision, etc.) remain as inline comments for clarity
+  - Improves TypeSpec → OpenAPI compilation with proper descriptions
+
+### Changed
+
+- **Comment structure separation**: Split comments into description and metadata
+  - `description`: User-facing comments (converted to JSDoc)
+  - `metadata`: Technical information (limit, precision, references, defaults)
+  - Better separation of concerns for documentation vs. technical details
+
+### Technical
+
+- Refactored `buildColumnComment` to separate description from metadata
+- Added `buildReferenceComment` function for cleaner reference handling
+- Updated `modelFormatter.ts` to generate JSDoc comments for descriptions
+- Enhanced test coverage for new comment structure
+- Improved code maintainability with specialized comment functions
+
 ## [1.1.3] - 2025-11-11
 
 ### Changed

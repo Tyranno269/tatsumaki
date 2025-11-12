@@ -4,31 +4,41 @@ export function buildColumnComment(
   precision?: string,
   scale?: string,
   limit?: string,
-  refTable?: string,
-): string | undefined {
-  let comment = baseComment;
+): { description?: string; metadata?: string } {
+  const metadataParts: string[] = [];
 
   if (precision || scale) {
     const p = precision || "10";
     const s = scale || "0";
-    const precisionInfo = `precision: ${p}, scale: ${s}`;
-    comment = comment ? `${comment} (${precisionInfo})` : precisionInfo;
+    metadataParts.push(`precision: ${p}, scale: ${s}`);
   }
 
   if (limit) {
-    const limitInfo = `limit: ${limit}`;
-    comment = comment ? `${comment} (${limitInfo})` : limitInfo;
+    metadataParts.push(`limit: ${limit}`);
   }
 
   if (defaultValue !== undefined) {
-    const defaultInfo = `default: ${JSON.stringify(defaultValue)}`;
-    comment = comment ? `${comment} (${defaultInfo})` : defaultInfo;
+    metadataParts.push(`default: ${JSON.stringify(defaultValue)}`);
   }
+
+  return {
+    description: baseComment,
+    metadata: metadataParts.length > 0 ? metadataParts.join(", ") : undefined,
+  };
+}
+
+export function buildReferenceComment(
+  baseComment?: string,
+  refTable?: string,
+): { description?: string; metadata?: string } {
+  const metadataParts: string[] = [];
 
   if (refTable) {
-    const refInfo = `ref: ${refTable}`;
-    comment = comment ? `${comment}; ${refInfo}` : refInfo;
+    metadataParts.push(`ref: ${refTable}`);
   }
 
-  return comment;
+  return {
+    description: baseComment,
+    metadata: metadataParts.length > 0 ? metadataParts.join(", ") : undefined,
+  };
 }

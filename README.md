@@ -92,15 +92,17 @@ using TypeSpec.Http;
 @server("http://localhost:3000", "api")
 @route("/api/v1")
 namespace Api {
-  // User accounts
+  /** User accounts */
   model Account {
     account_id: int64;
-    name: string; // Account name (limit: 100)
+    /** Account name */
+    name: string; // limit: 100
     status: string; // default: "active"
     enabled: boolean | null; // default: true
     max_users: int32 | null; // default: 10
     company_id: string; // ref: company
     organization_id: int64; // ref: companies
+    /** Balance amount */
     balance: string | null; // precision: 10, scale: 2
     created_at: utcDateTime;
     updated_at: utcDateTime;
@@ -108,6 +110,7 @@ namespace Api {
 
   model Post {
     id: string;
+    /** Post title */
     title: string;
     account_id: int64; // ref: account
     created_at: utcDateTime | null;
@@ -129,8 +132,8 @@ namespace Api {
 - **Default Values**: Extracts primitive defaults (string, number, boolean) to comments
 - **References**: Converts `t.references` to foreign key fields with accurate table references
 - **Timestamps**: Expands `t.timestamps` to individual fields
-- **Comments**: Preserves table and column comments
-- **Metadata**: Includes precision/scale, limits, and constraints
+- **JSDoc Comments**: Preserves table and column comments as JSDoc for OpenAPI generation
+- **Metadata**: Includes precision/scale, limits, and constraints as inline comments
 - **Safety**: Prevents accidental overwrites, detects duplicates
 
 ## Supported Rails Features
@@ -139,7 +142,7 @@ namespace Api {
 - Custom primary key types (`id: :uuid`, `primary_key: "account_id"`, `id: false`)
 - References with custom types (`type: :uuid`) and foreign key options (`to_table: :companies`)
 - Timestamps with null constraints
-- Table and column comments
+- Table and column comments (converted to JSDoc for OpenAPI generation)
 - Default values for primitive types (string, number, boolean)
 - Precision/scale for decimals
 - String limits

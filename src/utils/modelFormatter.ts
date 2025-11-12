@@ -1,16 +1,18 @@
 import type { TableModel } from "./schemaParser.js";
 
 export function formatModelDefinition(model: TableModel): string {
-  const comment = model.comment ? `  // ${model.comment}\n` : "";
+  const tableComment = model.comment ? `  /** ${model.comment} */\n` : "";
   const fields = model.fields
     .map((field) => {
-      const fieldComment = field.comment ? ` // ${field.comment}` : "";
+      const fieldDescription = field.description ? `    /** ${field.description} */\n` : "";
       const fieldType = field.nullable ? `${field.type} | null` : field.type;
-      return `    ${field.name}: ${fieldType};${fieldComment}`;
+      const metadataComment = field.metadata ? ` // ${field.metadata}` : "";
+      const fieldLine = `    ${field.name}: ${fieldType};${metadataComment}`;
+      return fieldDescription + fieldLine;
     })
     .join("\n");
 
-  return `${comment}  model ${model.name} {\n${fields}\n  }`;
+  return `${tableComment}  model ${model.name} {\n${fields}\n  }`;
 }
 
 export function formatModelDefinitions(models: TableModel[]): string {

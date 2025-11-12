@@ -35,14 +35,14 @@ function expect(actual) {
     },
     arrayContaining: (expected) => {
       for (const item of expected) {
-        const found = actual.some(actualItem => 
-          JSON.stringify(actualItem) === JSON.stringify(item)
+        const found = actual.some(
+          (actualItem) => JSON.stringify(actualItem) === JSON.stringify(item),
         );
         if (!found) {
           throw new Error(`Expected array to contain ${JSON.stringify(item)}`);
         }
       }
-    }
+    },
   };
 }
 
@@ -56,7 +56,7 @@ test("handles table without comment and auto-adds id", () => {
       t.timestamps null: false
     end
   `;
-  
+
   const models = parseSchema(schema);
   expect(models).toHaveLength(1);
   expect(models[0].name).toBe("User");
@@ -71,12 +71,12 @@ test("handles custom primary key name", () => {
       t.string "name", null: false
     end
   `;
-  
+
   const models = parseSchema(schema);
   expect(models[0].name).toBe("Account");
   expect(models[0].primaryKey).toBe("account_id");
-  
-  const accountIdField = models[0].fields.find(f => f.name === "account_id");
+
+  const accountIdField = models[0].fields.find((f) => f.name === "account_id");
   expect(accountIdField.type).toBe("int64");
   expect(accountIdField.nullable).toBe(false);
 });
@@ -87,10 +87,10 @@ test("handles id: false (no primary key)", () => {
       t.string "message"
     end
   `;
-  
+
   const models = parseSchema(schema);
   expect(models[0].primaryKey).toBe(undefined);
-  expect(models[0].fields.some(f => f.name === "id")).toBe(false);
+  expect(models[0].fields.some((f) => f.name === "id")).toBe(false);
 });
 
 // Default value tests
@@ -103,15 +103,15 @@ test("handles primitive default values", () => {
       t.string "complex_default", default: -> { "NOW()" }
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const statusField = fields.find(f => f.name === "status");
-  const enabledField = fields.find(f => f.name === "enabled");
-  const maxCountField = fields.find(f => f.name === "max_count");
-  const complexField = fields.find(f => f.name === "complex_default");
-  
+
+  const statusField = fields.find((f) => f.name === "status");
+  const enabledField = fields.find((f) => f.name === "enabled");
+  const maxCountField = fields.find((f) => f.name === "max_count");
+  const complexField = fields.find((f) => f.name === "complex_default");
+
   expect(statusField.default).toBe("active");
   expect(enabledField.default).toBe(true);
   expect(maxCountField.default).toBe(100);
@@ -127,14 +127,14 @@ test("handles foreign key to_table references", () => {
       t.references "category", foreign_key: { to_table: :post_categories, on_delete: :cascade }
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const userField = fields.find(f => f.name === "user_id");
-  const authorField = fields.find(f => f.name === "author_id");
-  const categoryField = fields.find(f => f.name === "category_id");
-  
+
+  const userField = fields.find((f) => f.name === "user_id");
+  const authorField = fields.find((f) => f.name === "author_id");
+  const categoryField = fields.find((f) => f.name === "category_id");
+
   expect(userField.comment).toBe("ref: user");
   expect(authorField.comment).toBe("ref: people");
   expect(categoryField.comment).toBe("ref: post_categories");
@@ -165,19 +165,19 @@ test("comprehensive Rails data types mapping", () => {
       t.macaddr "macaddr_field"
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
+
   const fieldTypes = fields.reduce((acc, field) => {
     acc[field.name] = field.type;
     return acc;
   }, {});
-  
+
   expect(fieldTypes).toMatchObject({
     id: "int64",
     str_field: "string",
-    text_field: "string", 
+    text_field: "string",
     int_field: "int32",
     bigint_field: "int64",
     smallint_field: "int32",
@@ -194,7 +194,7 @@ test("comprehensive Rails data types mapping", () => {
     uuid_field: "string",
     inet_field: "string",
     cidr_field: "string",
-    macaddr_field: "string"
+    macaddr_field: "string",
   });
 });
 
@@ -207,14 +207,14 @@ test("handles references with various types", () => {
       t.belongs_to "author", null: false
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const userField = fields.find(f => f.name === "user_id");
-  const categoryField = fields.find(f => f.name === "category_id");
-  const authorField = fields.find(f => f.name === "author_id");
-  
+
+  const userField = fields.find((f) => f.name === "user_id");
+  const categoryField = fields.find((f) => f.name === "category_id");
+  const authorField = fields.find((f) => f.name === "author_id");
+
   expect(userField.type).toBe("int64");
   expect(userField.comment).toBe("ref: user");
   expect(categoryField.type).toBe("string");
@@ -232,14 +232,14 @@ test("handles nullable fields correctly", () => {
       t.string "default_nullable"
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const requiredField = fields.find(f => f.name === "required_field");
-  const optionalField = fields.find(f => f.name === "optional_field");
-  const defaultField = fields.find(f => f.name === "default_nullable");
-  
+
+  const requiredField = fields.find((f) => f.name === "required_field");
+  const optionalField = fields.find((f) => f.name === "optional_field");
+  const defaultField = fields.find((f) => f.name === "default_nullable");
+
   expect(requiredField.nullable).toBe(false);
   expect(optionalField.nullable).toBe(true);
   expect(defaultField.nullable).toBe(true);
@@ -253,13 +253,13 @@ test("handles limits and precision in comments", () => {
       t.decimal "price", precision: 10, scale: 2
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const nameField = fields.find(f => f.name === "name");
-  const priceField = fields.find(f => f.name === "price");
-  
+
+  const nameField = fields.find((f) => f.name === "name");
+  const priceField = fields.find((f) => f.name === "price");
+
   expect(nameField.comment).toBe("User name (limit: 100)");
   expect(priceField.comment).toBe("precision: 10, scale: 2");
 });
@@ -271,13 +271,13 @@ test("handles timestamps with different null constraints", () => {
       t.timestamps null: false
     end
   `;
-  
+
   const models = parseSchema(schema);
   const fields = models[0].fields;
-  
-  const createdAt = fields.find(f => f.name === "created_at");
-  const updatedAt = fields.find(f => f.name === "updated_at");
-  
+
+  const createdAt = fields.find((f) => f.name === "created_at");
+  const updatedAt = fields.find((f) => f.name === "updated_at");
+
   expect(createdAt.nullable).toBe(false);
   expect(updatedAt.nullable).toBe(false);
 });
@@ -289,18 +289,18 @@ test("handles custom id types and id: false", () => {
       t.string "title"
     end
   `;
-  
+
   const schema2 = `
     create_table "logs", id: false do |t|
       t.string "message"
     end
   `;
-  
+
   const models1 = parseSchema(schema1);
   const models2 = parseSchema(schema2);
-  
+
   expect(models1[0].fields[0].type).toBe("string"); // uuid -> string
-  expect(models2[0].fields.some(f => f.name === "id")).toBe(false);
+  expect(models2[0].fields.some((f) => f.name === "id")).toBe(false);
 });
 
 // Singularization and naming
@@ -314,10 +314,10 @@ test("handles table name conversion", () => {
       t.string "name"
     end
   `;
-  
+
   const models = parseSchema(schema);
-  const names = models.map(m => m.name).sort();
-  
+  const names = models.map((m) => m.name).sort();
+
   expect(names).toEqual(["Category", "UserProfile"]);
 });
 

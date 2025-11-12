@@ -1,11 +1,12 @@
-import { buildColumnComment } from "./columnOptionProcessor.js";
+import { buildColumnComment, buildReferenceComment } from "./columnOptionProcessor.js";
 import { mapRailsType } from "./railsTypeMapper.js";
 
 export interface Field {
   name: string;
   type: string;
   nullable: boolean;
-  comment?: string;
+  description?: string;
+  metadata?: string;
   default?: string | number | boolean;
 }
 
@@ -39,8 +40,20 @@ export function parseColumns(tableBody: string): Field[] {
 function parseTimestamps(line: string): Field[] {
   const nullable = /null:\s*false/.test(line) ? false : true;
   return [
-    { name: "created_at", type: "utcDateTime", nullable },
-    { name: "updated_at", type: "utcDateTime", nullable },
+    {
+      name: "created_at",
+      type: "utcDateTime",
+      nullable,
+      description: undefined,
+      metadata: undefined,
+    },
+    {
+      name: "updated_at",
+      type: "utcDateTime",
+      nullable,
+      description: undefined,
+      metadata: undefined,
+    },
   ];
 }
 
@@ -52,11 +65,14 @@ function parseReference(name: string, rest: string): Field {
   const toTableMatch = /foreign_key:\s*{[^}]*to_table:\s*:(\w+)/.exec(rest);
   const refTable = toTableMatch?.[1] || name;
 
+  const commentData = buildReferenceComment(baseComment, refTable);
+
   return {
     name: `${name}_id`,
     type: fieldType,
     nullable,
-    comment: buildColumnComment(baseComment, undefined, undefined, undefined, undefined, refTable),
+    description: commentData.description,
+    metadata: commentData.metadata,
   };
 }
 
@@ -81,11 +97,14 @@ function parseColumn(type: string, name: string, rest: string): Field {
   const scale = /scale:\s*(\d+)/.exec(rest)?.[1];
   const limit = /limit:\s*(\d+)/.exec(rest)?.[1];
 
+  const commentData = buildColumnComment(baseComment, defaultValue, precision, scale, limit);
+
   const field: Field = {
     name,
     type: mapRailsType(type),
     nullable,
-    comment: buildColumnComment(baseComment, defaultValue, precision, scale, limit),
+    description: commentData.description,
+    metadata: commentData.metadata,
   };
 
   if (defaultValue !== undefined) {

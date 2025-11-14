@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.5] - 2025-11-14
+
+### Changed
+
+- **Development tooling improvements**: Unified package manager usage and optimized TypeScript configuration
+  - Updated all development scripts to use `pnpm` consistently
+  - Improved developer experience with consistent tooling
+
+### Technical
+
+- **TypeScript configuration analysis**: Comprehensive ES target compatibility testing
+  - Analyzed ES2020-ESNext compatibility with TypeScript 5.9.3
+  - Verified ESNext as viable option for latest JavaScript features
+  - Prepared foundation for future TypeScript configuration improvements
+- **Package manager consistency**: All npm scripts now use pnpm for better performance and consistency
+  - `prepare` and `prepublishOnly` scripts updated to use pnpm
+  - Development documentation updated accordingly
+  - Maintains npm for end-user installation in README
+
 ## [1.1.4] - 2025-11-12
 
 ### Added

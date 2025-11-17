@@ -151,7 +151,7 @@ namespace Api {
       enabled,
       suspended,
     }
-    
+
     enum Status {
       active,
       archived,

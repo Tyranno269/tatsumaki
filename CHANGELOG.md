@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1] - 2025-11-17
+
+### Fixed
+
+- **Enum namespace conflicts**: Fixed TypeSpec compilation errors caused by duplicate names between enum namespaces and model names
+  - Changed enum namespaces from `namespace Company` to `namespace CompanyEnums`
+  - Updated enum type references from `Company.Status` to `CompanyEnums.Status`
+  - Resolves "Duplicate name" errors during `pnpm tsp compile .`
+
 ## [1.2.0] - 2025-11-17
 
 ### Added
@@ -25,7 +34,7 @@
   - Symbol and string value extraction with proper formatting
 - **Code organization improvements**: Separated enum functionality into focused modules
   - `enumParser.ts`: Rails enum definition parsing
-  - `enumGenerator.ts`: TypeSpec enum and namespace generation  
+  - `enumGenerator.ts`: TypeSpec enum and namespace generation
   - `enumUtils.ts`: Shared utility functions
   - `modelFinder.ts`: Rails model file discovery and filtering
 

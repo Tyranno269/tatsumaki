@@ -124,9 +124,71 @@ namespace Api {
 }
 ```
 
+## Rails Enum Support
+
+Tatsumaki automatically detects Rails enum definitions in your model files and generates proper TypeSpec enums with namespaced types.
+
+### Input (Rails Model)
+
+```ruby
+class Company < ApplicationRecord
+  enum :company_status, { disabled: 0, enabled: 1, suspended: 9 }
+  enum :status, [ :active, :archived ]
+end
+
+class Book < ApplicationRecord
+  enum :status, [ :draft, :published, :archived ]
+end
+```
+
+### Output (TypeSpec with Enums)
+
+```typescript
+namespace Api {
+  namespace Company {
+    enum CompanyStatus {
+      disabled,
+      enabled,
+      suspended,
+    }
+    
+    enum Status {
+      active,
+      archived,
+    }
+  }
+
+  namespace Book {
+    enum Status {
+      draft,
+      published,
+      archived,
+    }
+  }
+
+  model Company {
+    id: int64;
+    company_name: string;
+    company_status: Company.CompanyStatus; // Enum type instead of int32
+    status: Company.Status;
+    created_at: utcDateTime;
+    updated_at: utcDateTime;
+  }
+
+  model Book {
+    id: int64;
+    name: string;
+    status: Book.Status; // No naming conflict with Company.Status
+    created_at: utcDateTime;
+    updated_at: utcDateTime;
+  }
+}
+```
+
 ## Features
 
 - **Smart Detection**: Finds `schema.rb` in various project structures
+- **Rails Enum Support**: Automatically generates TypeSpec enums from Rails model enum definitions
 - **Type Mapping**: Rails → TypeSpec types (string, int32, int64, utcDateTime, etc.)
 - **Custom Primary Keys**: Handles `primary_key: "account_id"` and `id: false`
 - **Default Values**: Extracts primitive defaults (string, number, boolean) to comments
@@ -139,6 +201,7 @@ namespace Api {
 ## Supported Rails Features
 
 - All standard column types (string, integer, bigint, decimal, boolean, etc.)
+- **Enum definitions** with all Rails syntax formats (hash, array, %i notation, keyword arguments)
 - Custom primary key types (`id: :uuid`, `primary_key: "account_id"`, `id: false`)
 - References with custom types (`type: :uuid`) and foreign key options (`to_table: :companies`)
 - Timestamps with null constraints

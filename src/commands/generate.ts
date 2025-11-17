@@ -1,7 +1,9 @@
 import fg from "fast-glob";
 import { promises as fs } from "fs";
 
+import type { EnumDefinition } from "../utils/enumParser.js";
 import { ensureDir, fileExists, writeFileSafe, readFile } from "../utils/fs.js";
+import { parseRelevantRailsEnums } from "../utils/modelFinder.js";
 import { formatModelDefinitions } from "../utils/modelFormatter.js";
 import { resolvePath } from "../utils/path.js";
 import { parseSchema, type TableModel } from "../utils/schemaParser.js";
@@ -40,13 +42,20 @@ export async function generateRailsTsp({
   const schemaContent = await readFile(schemaPath);
   const models = parseSchema(schemaContent);
 
+  // Extract table names from schema.rb
+  const tableNames = models.map((model) => model.tableName);
+
+  // Parse Rails model files for enum definitions (only for relevant tables)
+  const projectRoot = schemaPath.replace(/\/db\/schema\.rb$/, "");
+  const enums = await parseRelevantRailsEnums(projectRoot, tableNames);
+
   // Sort models alphabetically for stable output
   models.sort((a, b) => a.name.localeCompare(b.name));
 
   if (append && exists) {
-    await appendToFile(targetPath, models);
+    await appendToFile(targetPath, models, enums);
   } else {
-    const content = defaultRailsTspTemplate(models);
+    const content = defaultRailsTspTemplate(models, enums);
     if (force || !exists) {
       await fs.writeFile(targetPath, content, "utf-8");
       console.log?.(`${force && exists ? "Overwritten" : "Created"} rails.tsp at: ${targetPath}`);
@@ -57,7 +66,7 @@ export async function generateRailsTsp({
   }
 }
 
-async function appendToFile(targetPath: string, models: TableModel[]) {
+async function appendToFile(targetPath: string, models: TableModel[], enums: EnumDefinition[]) {
   const existing = await fs.readFile(targetPath, "utf-8");
 
   const existingModels = extractExistingModels(existing);
@@ -68,7 +77,7 @@ async function appendToFile(targetPath: string, models: TableModel[]) {
     return;
   }
 
-  const appendContent = generateAppendContent(newModels);
+  const appendContent = generateAppendContent(newModels, enums);
   const updatedContent = existing.replace(/(}\s*)$/, appendContent + "\n$1");
 
   await fs.writeFile(targetPath, updatedContent, "utf-8");
@@ -85,10 +94,10 @@ function extractExistingModels(content: string): Set<string> {
   return existingModels;
 }
 
-function generateAppendContent(models: TableModel[]): string {
+function generateAppendContent(models: TableModel[], enums: EnumDefinition[]): string {
   const timestamp = new Date().toISOString().split("T")[0];
   const separator = `\n  // ---- appended at ${timestamp} ----`;
-  const modelDefinitions = formatModelDefinitions(models);
+  const modelDefinitions = formatModelDefinitions(models, enums);
 
   return separator + "\n\n" + modelDefinitions;
 }

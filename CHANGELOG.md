@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.2.0] - 2025-11-17
+
+### Added
+
+- **Rails enum support**: Automatically generate TypeSpec enums from Rails model enum definitions
+  - Supports all Rails enum formats: hash `{ disabled: 0, enabled: 1 }`, array `[ :active, :archived ]`, %i notation `%i(online offline)`, and keyword arguments `series_a: 0, series_b: 1`
+  - Handles complex enum definitions with do blocks and state machine logic
+  - Generates namespaced TypeSpec enums to avoid naming conflicts
+  - Automatically replaces integer fields with proper enum types in models
+  - Only processes models that correspond to tables defined in schema.rb
+
+### Technical
+
+- **Smart model filtering**: Only analyzes Rails models that have corresponding tables in schema.rb
+  - Converts table names to model names (companies → Company) for accurate matching
+  - Prevents processing of models without database tables (e.g., concerns, abstract models)
+- **Namespace-based enum generation**: Creates model-specific namespaces for enum definitions
+  - Example: `Company.Status`, `Company.CompanyStatus` to avoid conflicts
+  - Replaces `int32` fields with proper enum types: `status: Company.Status`
+- **Comprehensive enum parsing**: Handles all Rails enum syntaxes including edge cases
+  - Multi-line enum definitions with proper bracket/brace counting
+  - Do block detection and content exclusion
+  - Symbol and string value extraction with proper formatting
+- **Code organization improvements**: Separated enum functionality into focused modules
+  - `enumParser.ts`: Rails enum definition parsing
+  - `enumGenerator.ts`: TypeSpec enum and namespace generation  
+  - `enumUtils.ts`: Shared utility functions
+  - `modelFinder.ts`: Rails model file discovery and filtering
+
 ## [1.1.5] - 2025-11-14
 
 ### Changed

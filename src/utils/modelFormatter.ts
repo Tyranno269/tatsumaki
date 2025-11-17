@@ -1,11 +1,18 @@
+import { getEnumType } from "./enumGenerator.js";
+import type { EnumDefinition } from "./enumParser.js";
 import type { TableModel } from "./schemaParser.js";
 
-export function formatModelDefinition(model: TableModel): string {
+export function formatModelDefinition(model: TableModel, enums: EnumDefinition[] = []): string {
   const tableComment = model.comment ? `  /** ${model.comment} */\n` : "";
   const fields = model.fields
     .map((field) => {
       const fieldDescription = field.description ? `    /** ${field.description} */\n` : "";
-      const fieldType = field.nullable ? `${field.type} | null` : field.type;
+
+      // Check if field has enum type
+      const enumType = getEnumType(field.name, model.name, enums);
+      const baseType = enumType || field.type;
+      const fieldType = field.nullable ? `${baseType} | null` : baseType;
+
       const metadataComment = field.metadata ? ` // ${field.metadata}` : "";
       const fieldLine = `    ${field.name}: ${fieldType};${metadataComment}`;
       return fieldDescription + fieldLine;
@@ -15,6 +22,6 @@ export function formatModelDefinition(model: TableModel): string {
   return `${tableComment}  model ${model.name} {\n${fields}\n  }`;
 }
 
-export function formatModelDefinitions(models: TableModel[]): string {
-  return models.map(formatModelDefinition).join("\n\n");
+export function formatModelDefinitions(models: TableModel[], enums: EnumDefinition[] = []): string {
+  return models.map((model) => formatModelDefinition(model, enums)).join("\n\n");
 }

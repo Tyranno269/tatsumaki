@@ -1,13 +1,13 @@
 import fg from "fast-glob";
 import { promises as fs } from "fs";
 
-import type { EnumDefinition } from "../utils/enumParser.js";
+import { parseRelevantRailsEnums } from "../discovery/modelFinder.js";
+import { formatModelDefinitions } from "../generation/modelFormatter.js";
+import { defaultRailsTspTemplate } from "../generation/tspTemplates.js";
+import type { EnumDefinition } from "../parsing/enumParser.js";
+import { parseSchema, type TableModel } from "../parsing/schemaParser.js";
 import { ensureDir, fileExists, writeFileSafe, readFile } from "../utils/fs.js";
-import { parseRelevantRailsEnums } from "../utils/modelFinder.js";
-import { formatModelDefinitions } from "../utils/modelFormatter.js";
 import { resolvePath } from "../utils/path.js";
-import { parseSchema, type TableModel } from "../utils/schemaParser.js";
-import { defaultRailsTspTemplate } from "../utils/tspTemplates.js";
 
 type GenerateOptions = {
   cwd: string;

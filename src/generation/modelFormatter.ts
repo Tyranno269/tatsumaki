@@ -1,6 +1,6 @@
 import { getEnumType } from "./enumGenerator.js";
-import type { EnumDefinition } from "./enumParser.js";
-import type { TableModel } from "./schemaParser.js";
+import type { EnumDefinition } from "../parsing/enumParser.js";
+import type { TableModel } from "../parsing/schemaParser.js";
 
 export function formatModelDefinition(model: TableModel, enums: EnumDefinition[] = []): string {
   const tableComment = model.comment ? `  /** ${model.comment} */\n` : "";

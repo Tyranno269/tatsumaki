@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.2.2] - 2025-11-17
+
+### Changed
+
+- **Directory structure refactoring**: Reorganized `src/utils` into functional subdirectories for better code organization
+  - `src/parsing/`: Rails schema and model file parsing (schemaParser, columnParser, enumParser)
+  - `src/generation/`: TypeSpec output generation (enumGenerator, modelFormatter, tspTemplates)
+  - `src/mapping/`: Data transformation (railsTypeMapper)
+  - `src/processing/`: Specific data processing (columnOptionProcessor)
+  - `src/discovery/`: File discovery and filtering (modelFinder)
+  - `src/utils/`: Pure utility functions (enumUtils, fs, path, railsInflector, stringUtils)
+  - Improved code discoverability and maintainability with clear separation of concerns
+
+### Technical
+
+- **Modular architecture enhancement**: Files organized by functional responsibility rather than technical grouping
+- **Import path updates**: All relative imports updated to reflect new directory structure
+- **Test organization**: Test files moved to corresponding functional directories
+- **Zero functional changes**: Implementation logic remains unchanged, only structural improvements
+
 ## [1.2.1] - 2025-11-17
 
 ### Fixed

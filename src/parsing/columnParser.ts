@@ -1,5 +1,5 @@
-import { buildColumnComment, buildReferenceComment } from "./columnOptionProcessor.js";
-import { mapRailsType } from "./railsTypeMapper.js";
+import { mapRailsType } from "../mapping/railsTypeMapper.js";
+import { buildColumnComment, buildReferenceComment } from "../processing/columnOptionProcessor.js";
 
 export interface Field {
   name: string;

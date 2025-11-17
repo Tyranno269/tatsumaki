@@ -1,4 +1,4 @@
-import { parseHashContent, parseArrayContent, toPascalCase } from "./enumUtils.js";
+import { parseHashContent, parseArrayContent, toPascalCase } from "../utils/enumUtils.js";
 
 export interface EnumDefinition {
   fieldName: string;

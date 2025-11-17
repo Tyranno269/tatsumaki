@@ -1,5 +1,5 @@
-import type { EnumDefinition } from "./enumParser.js";
-import { toPascalCase } from "./enumUtils.js";
+import type { EnumDefinition } from "../parsing/enumParser.js";
+import { toPascalCase } from "../utils/enumUtils.js";
 
 /**
  * Group enums by model name

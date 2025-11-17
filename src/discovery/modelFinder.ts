@@ -1,9 +1,13 @@
 import fg from "fast-glob";
 import { readFileSync, existsSync } from "fs";
 
-import { parseRailsEnums, getModelNameFromPath, type EnumDefinition } from "./enumParser.js";
-import { singularize } from "./railsInflector.js";
-import { toPascal } from "./stringUtils.js";
+import {
+  parseRailsEnums,
+  getModelNameFromPath,
+  type EnumDefinition,
+} from "../parsing/enumParser.js";
+import { singularize } from "../utils/railsInflector.js";
+import { toPascal } from "../utils/stringUtils.js";
 
 /**
  * Convert table name to model name

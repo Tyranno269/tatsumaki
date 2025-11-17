@@ -1,8 +1,8 @@
 import { parseColumns } from "./columnParser.js";
 import type { Field } from "./columnParser.js";
-import { singularize } from "./railsInflector.js";
-import { mapRailsType } from "./railsTypeMapper.js";
-import { toPascal } from "./stringUtils.js";
+import { mapRailsType } from "../mapping/railsTypeMapper.js";
+import { singularize } from "../utils/railsInflector.js";
+import { toPascal } from "../utils/stringUtils.js";
 
 export interface TableModel {
   name: string;

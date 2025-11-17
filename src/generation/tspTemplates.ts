@@ -1,7 +1,7 @@
 import { generateEnumNamespaces } from "./enumGenerator.js";
-import type { EnumDefinition } from "./enumParser.js";
 import { formatModelDefinitions } from "./modelFormatter.js";
-import type { TableModel } from "./schemaParser.js";
+import type { EnumDefinition } from "../parsing/enumParser.js";
+import type { TableModel } from "../parsing/schemaParser.js";
 
 export function defaultRailsTspTemplate(
   models: TableModel[] = [],

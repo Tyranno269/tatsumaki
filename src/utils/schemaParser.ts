@@ -6,6 +6,7 @@ import { toPascal } from "./stringUtils.js";
 
 export interface TableModel {
   name: string;
+  tableName: string;
   comment?: string;
   primaryKey?: string;
   fields: Field[];
@@ -54,6 +55,7 @@ export function parseSchema(content: string): TableModel[] {
 
     models.push({
       name: modelName,
+      tableName,
       comment: comment || undefined,
       primaryKey,
       fields,

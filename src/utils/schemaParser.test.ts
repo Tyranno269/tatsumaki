@@ -12,6 +12,7 @@ describe("parseSchema", () => {
     const models = parseSchema(schema);
     expect(models).toHaveLength(1);
     expect(models[0].name).toBe("User");
+    expect(models[0].tableName).toBe("users");
     expect(models[0].comment).toBeUndefined();
     expect(models[0].fields).toEqual([
       { name: "id", type: "int64", nullable: false, description: undefined, metadata: undefined },

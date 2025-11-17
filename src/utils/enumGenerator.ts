@@ -35,7 +35,7 @@ ${values}
 const generateEnumNamespace = (modelName: string, enums: EnumDefinition[]): string => {
   const enumDefinitions = enums.map(generateEnum).join("\n\n");
 
-  return `  namespace ${modelName} {
+  return `  namespace ${modelName}Enums {
 ${enumDefinitions}
   }`;
 };
@@ -66,5 +66,5 @@ export const getEnumType = (
 ): string | null => {
   const enumDef = enums.find((e) => e.modelName === modelName && e.fieldName === fieldName);
 
-  return enumDef ? `${modelName}.${toPascalCase(enumDef.fieldName)}` : null;
+  return enumDef ? `${modelName}Enums.${toPascalCase(enumDef.fieldName)}` : null;
 };
